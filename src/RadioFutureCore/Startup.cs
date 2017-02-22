@@ -82,6 +82,12 @@ namespace RadioFutureCore
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                    name: "room",
+                    template: "rooms/{*name}",
+                    defaults: new { controller = "Room", action = "EnterRoom" });
+
             });
         }
     }
