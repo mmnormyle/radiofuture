@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace RadioFutureCore.Data.Migrations
+namespace RadioFutureCore.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -62,6 +60,19 @@ namespace RadioFutureCore.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Session",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Session", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -150,6 +161,62 @@ namespace RadioFutureCore.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CurSessionID = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    QueuePosition = table.Column<int>(nullable: false),
+                    SessionID = table.Column<int>(nullable: true),
+                    VideoTime = table.Column<int>(nullable: false),
+                    Waiting = table.Column<bool>(nullable: false),
+                    YTPlayerState = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_User_Session_SessionID",
+                        column: x => x.SessionID,
+                        principalTable: "Session",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Media",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Dislikes = table.Column<int>(nullable: false),
+                    Likes = table.Column<int>(nullable: false),
+                    SessionID = table.Column<int>(nullable: true),
+                    ThumbURL = table.Column<string>(nullable: true),
+                    UserID = table.Column<int>(nullable: false),
+                    UserName = table.Column<string>(nullable: true),
+                    YTVideoID = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Media", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Media_Session_SessionID",
+                        column: x => x.SessionID,
+                        principalTable: "Session",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Media_User_UserID",
+                        column: x => x.UserID,
+                        principalTable: "User",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
@@ -190,6 +257,21 @@ namespace RadioFutureCore.Data.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Media_SessionID",
+                table: "Media",
+                column: "SessionID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Media_UserID",
+                table: "Media",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_SessionID",
+                table: "User",
+                column: "SessionID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -210,10 +292,19 @@ namespace RadioFutureCore.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Media");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "User");
+
+            migrationBuilder.DropTable(
+                name: "Session");
         }
     }
 }

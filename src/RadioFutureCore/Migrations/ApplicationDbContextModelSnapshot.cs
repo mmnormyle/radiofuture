@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using RadioFutureCore.Data;
 
-namespace RadioFutureCore.Data.Migrations
+namespace RadioFutureCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -181,6 +181,8 @@ namespace RadioFutureCore.Data.Migrations
 
                     b.Property<int>("Likes");
 
+                    b.Property<int?>("SessionID");
+
                     b.Property<string>("ThumbURL");
 
                     b.Property<int>("UserID");
@@ -191,7 +193,49 @@ namespace RadioFutureCore.Data.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("SessionID");
+
+                    b.HasIndex("UserID");
+
                     b.ToTable("Media");
+                });
+
+            modelBuilder.Entity("RadioFutureCore.Models.Session", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Session");
+                });
+
+            modelBuilder.Entity("RadioFutureCore.Models.User", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("CurSessionID");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("QueuePosition");
+
+                    b.Property<int?>("SessionID");
+
+                    b.Property<int>("VideoTime");
+
+                    b.Property<bool>("Waiting");
+
+                    b.Property<int>("YTPlayerState");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SessionID");
+
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
@@ -229,6 +273,25 @@ namespace RadioFutureCore.Data.Migrations
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RadioFutureCore.Models.Media", b =>
+                {
+                    b.HasOne("RadioFutureCore.Models.Session")
+                        .WithMany("Queue")
+                        .HasForeignKey("SessionID");
+
+                    b.HasOne("RadioFutureCore.Models.User")
+                        .WithMany("Recs")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RadioFutureCore.Models.User", b =>
+                {
+                    b.HasOne("RadioFutureCore.Models.Session")
+                        .WithMany("Users")
+                        .HasForeignKey("SessionID");
                 });
         }
     }

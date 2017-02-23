@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using RadioFutureCore.Data;
 
-namespace RadioFutureCore.Data.Migrations
+namespace RadioFutureCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("00000000000000_CreateIdentitySchema")]
-    partial class CreateIdentitySchema
+    [Migration("20170223053929_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc3")
+                .HasAnnotation("ProductVersion", "1.0.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -175,6 +173,72 @@ namespace RadioFutureCore.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("RadioFutureCore.Models.Media", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Dislikes");
+
+                    b.Property<int>("Likes");
+
+                    b.Property<int?>("SessionID");
+
+                    b.Property<string>("ThumbURL");
+
+                    b.Property<int>("UserID");
+
+                    b.Property<string>("UserName");
+
+                    b.Property<string>("YTVideoID");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SessionID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Media");
+                });
+
+            modelBuilder.Entity("RadioFutureCore.Models.Session", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Session");
+                });
+
+            modelBuilder.Entity("RadioFutureCore.Models.User", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("CurSessionID");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("QueuePosition");
+
+                    b.Property<int?>("SessionID");
+
+                    b.Property<int>("VideoTime");
+
+                    b.Property<bool>("Waiting");
+
+                    b.Property<int>("YTPlayerState");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SessionID");
+
+                    b.ToTable("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole")
@@ -210,6 +274,25 @@ namespace RadioFutureCore.Data.Migrations
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RadioFutureCore.Models.Media", b =>
+                {
+                    b.HasOne("RadioFutureCore.Models.Session")
+                        .WithMany("Queue")
+                        .HasForeignKey("SessionID");
+
+                    b.HasOne("RadioFutureCore.Models.User")
+                        .WithMany("Recs")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("RadioFutureCore.Models.User", b =>
+                {
+                    b.HasOne("RadioFutureCore.Models.Session")
+                        .WithMany("Users")
+                        .HasForeignKey("SessionID");
                 });
         }
     }

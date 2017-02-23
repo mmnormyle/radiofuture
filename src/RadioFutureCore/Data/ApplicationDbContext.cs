@@ -24,5 +24,9 @@ namespace RadioFutureCore.Data
         }
 
         public DbSet<Media> Media { get; set; }
+
+        public DbSet<Session> Session { get; set; }
+
+        public DbSet<User> User { get; set; }
     }
 }
