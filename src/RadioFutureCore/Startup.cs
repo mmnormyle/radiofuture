@@ -89,6 +89,8 @@ namespace RadioFutureCore
                     defaults: new { controller = "Room", action = "EnterRoom" });
 
             });
+
+            app.UseWebSockets();
         }
     }
 }
